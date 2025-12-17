@@ -88,6 +88,11 @@ class TwitterBio extends StatelessWidget {
 
   final String _tag;
 
+  static const TextStyle _textBoldWhite = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
@@ -107,7 +112,10 @@ class TwitterBio extends StatelessWidget {
                   fontSize: 25,
                 ),
               ),
-              Icon(Icons.check_circle, color: Colors.lightBlue),
+              Icon(
+                Icons.check_circle,
+                color: Color.fromARGB(255, 32, 111, 229),
+              ),
             ],
           ),
           Text('@$_tag'),
@@ -123,21 +131,9 @@ class TwitterBio extends StatelessWidget {
             text: TextSpan(
               style: TextStyle(color: Colors.grey),
               children: [
-                TextSpan(
-                  text: '53',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                TextSpan(text: '53', style: _textBoldWhite),
                 TextSpan(text: ' Obserwowani'),
-                TextSpan(
-                  text: ' 2 866 159',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                TextSpan(text: ' 2 866 159', style: _textBoldWhite),
                 TextSpan(text: ' Obserwujący'),
               ],
             ),
