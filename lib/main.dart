@@ -14,11 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lewandowski',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // TODO:
-        // textTheme: TextTheme(),
-        // colorScheme: ...
-      ),
+      theme: ThemeData(textTheme: GoogleFonts.latoTextTheme()),
       home: const MyHomePage(),
     );
   }
@@ -34,6 +30,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool clicked = false;
 
+  final _tag = 'lewy_official';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,29 +39,110 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Colors.black,
         child: Column(
           children: [
-            Image.asset('rl9-tlo.jpg'),
+            Container(
+              height: 125,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/rl9-tlo.jpg'),
+                  fit: BoxFit.fitWidth,
+                  alignment: FractionalOffset.center,
+                ),
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                spacing: 10,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage('profilowe.jpg'),
-                    radius: 40,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: AssetImage('assets/profilowe.jpg'),
+                        radius: 40,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            clicked = !clicked;
+                          });
+                        },
+                        child: FollowButton(clicked: clicked),
+                      ),
+                    ],
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        clicked = !clicked;
-                      });
-                    },
-                    child: FollowButton(clicked: clicked),
-                  ),
+                  TwitterBio(tag: _tag),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TwitterBio extends StatelessWidget {
+  const TwitterBio({super.key, required String tag}) : _tag = tag;
+
+  final String _tag;
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+      style: TextStyle(color: Colors.grey),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 14,
+        children: [
+          Row(
+            spacing: 6,
+            children: [
+              Text(
+                'Rafonix Lewandowski',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              Icon(Icons.check_circle, color: Colors.lightBlue),
+            ],
+          ),
+          Text('@$_tag'),
+          Text('❤ | ❌ | 🙅‍♂️ | #rl9'),
+          Row(
+            spacing: 5,
+            children: [
+              Icon(Icons.calendar_month_outlined, color: Colors.grey),
+              Text('Dołączył/a luty 2024  >'),
+            ],
+          ),
+          RichText(
+            text: TextSpan(
+              style: TextStyle(color: Colors.grey),
+              children: [
+                TextSpan(
+                  text: '53',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                TextSpan(text: ' Obserwowani'),
+                TextSpan(
+                  text: ' 2 866 159',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                TextSpan(text: ' Obserwujący'),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -84,7 +163,7 @@ class FollowButton extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(vertical: 7, horizontal: 25),
       child: Text(
-        'Obserwuj',
+        clicked ? 'Obserwujesz' : '   Obserwuj   ',
         style: GoogleFonts.roboto(
           color: clicked ? Colors.white : Colors.black,
           fontWeight: FontWeight.bold,
