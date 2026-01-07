@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:profile/post.dart';
 
 void main() {
   runApp(const MyApp());
@@ -73,6 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   TwitterBio(tag: _tag),
+                  TwitterPost(
+                    id: 0,
+                    text: 'Brawo @iga_swiatek jesteś wielka!\nGratuluje!',
+                  ),
                 ],
               ),
             ),
@@ -111,6 +116,7 @@ class TwitterBio extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
               Icon(
                 Icons.check_circle,
