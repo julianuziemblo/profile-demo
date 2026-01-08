@@ -31,14 +31,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool clicked = false;
 
-  final _tag = 'lewy_official';
+  static const _tag = 'lewy_official';
+  static const _profileName = 'Rafonix Lewandowski';
+
+  List<Widget> getPosts(int n) {
+    return List.generate(
+      n,
+      (i) => TwitterPost(
+        id: i,
+        profileName: _profileName,
+        date: DateTime.now(),
+        tag: _tag,
+        text: '$i',
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         color: Colors.black,
-        child: Column(
+        child: ListView(
           children: [
             Container(
               height: 125,
@@ -54,7 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(15),
               child: Column(
                 spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,11 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                  TwitterBio(tag: _tag),
-                  TwitterPost(
-                    id: 0,
-                    text: 'Brawo @iga_swiatek jesteś wielka!\nGratuluje!',
-                  ),
+                  TwitterBio(profileName: _profileName, tag: _tag),
+                  ...getPosts(10),
                 ],
               ),
             ),
@@ -89,8 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class TwitterBio extends StatelessWidget {
-  const TwitterBio({super.key, required String tag}) : _tag = tag;
+  const TwitterBio({super.key, required String tag, required this.profileName})
+    : _tag = tag;
 
+  final String profileName;
   final String _tag;
 
   static const TextStyle _textBoldWhite = TextStyle(
@@ -110,7 +122,7 @@ class TwitterBio extends StatelessWidget {
             spacing: 6,
             children: [
               Text(
-                'Rafonix Lewandowski',
+                profileName,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
