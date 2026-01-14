@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:profile/cubit/dark_mode_cubit.dart';
 import 'package:profile/post.dart';
+import 'package:profile/settings_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +15,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lewandowski',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(textTheme: GoogleFonts.latoTextTheme()),
-      home: const MyHomePage(),
+    return BlocProvider(
+      create: (context) => DarkModeCubit(),
+      child: MaterialApp(
+        title: 'Lewandowski',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(textTheme: GoogleFonts.latoTextTheme()),
+        home: const MyHomePage(),
+      ),
     );
   }
 }
@@ -49,9 +55,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<DarkModeCubit>().state;
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => SettingsPage()),
+              );
+            },
+            icon: Icon(Icons.settings),
+          ),
+        ],
+      ),
       body: Container(
-        color: Colors.black,
+        color: state is DarkModeOn ? Colors.black : Colors.white,
         child: ListView(
           children: [
             Container(
