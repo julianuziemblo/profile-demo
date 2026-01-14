@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:profile/post.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,14 +31,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool clicked = false;
 
-  final _tag = 'lewy_official';
+  static const _tag = 'lewy_official';
+  static const _profileName = 'Rafonix Lewandowski';
+
+  List<Widget> getPosts(int n) {
+    return List.generate(
+      n,
+      (i) => TwitterPost(
+        id: i,
+        profileName: _profileName,
+        date: DateTime.now(),
+        tag: _tag,
+        text: '$i',
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         color: Colors.black,
-        child: Column(
+        child: ListView(
           children: [
             Container(
               height: 125,
@@ -53,7 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(15),
               child: Column(
                 spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                  TwitterBio(tag: _tag),
+                  TwitterBio(profileName: _profileName, tag: _tag),
+                  ...getPosts(10),
                 ],
               ),
             ),
@@ -84,9 +99,16 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class TwitterBio extends StatelessWidget {
-  const TwitterBio({super.key, required String tag}) : _tag = tag;
+  const TwitterBio({super.key, required String tag, required this.profileName})
+    : _tag = tag;
 
+  final String profileName;
   final String _tag;
+
+  static const TextStyle _textBoldWhite = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +122,18 @@ class TwitterBio extends StatelessWidget {
             spacing: 6,
             children: [
               Text(
-                'Rafonix Lewandowski',
+                profileName,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
-              Icon(Icons.check_circle, color: Colors.lightBlue),
+              Icon(
+                Icons.check_circle,
+                color: Color.fromARGB(255, 32, 111, 229),
+              ),
             ],
           ),
           Text('@$_tag'),
@@ -123,21 +149,9 @@ class TwitterBio extends StatelessWidget {
             text: TextSpan(
               style: TextStyle(color: Colors.grey),
               children: [
-                TextSpan(
-                  text: '53',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                TextSpan(text: '53', style: _textBoldWhite),
                 TextSpan(text: ' Obserwowani'),
-                TextSpan(
-                  text: ' 2 866 159',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                TextSpan(text: ' 2 866 159', style: _textBoldWhite),
                 TextSpan(text: ' Obserwujący'),
               ],
             ),
