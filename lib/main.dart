@@ -1,18 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:profile/cubit/dark_mode_cubit.dart';
 import 'package:profile/post.dart';
 import 'package:profile/settings_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart' as geo;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const _token = '';
 void main() async {
-  await Permission.locationWhenInUse.request();
   WidgetsFlutterBinding.ensureInitialized();
-  MapboxOptions.setAccessToken(_token);
+
+  await dotenv.load(fileName: '.env');
+  final key = dotenv.env['MAPBOX_API_KEY'];
+  if (key == null) {
+    return;
+  }
+  MapboxOptions.setAccessToken(key);
   runApp(const MyApp());
+}
+
+Future<geo.Position> _determinePosition() async {
+  bool serviceEnabled;
+  geo.LocationPermission permission;
+
+  // Test if location services are enabled.
+  serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled don't continue
+    // accessing the position and request users of the
+    // App to enable the location services.
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await geo.Geolocator.checkPermission();
+  if (permission == geo.LocationPermission.denied) {
+    permission = await geo.Geolocator.requestPermission();
+    if (permission == geo.LocationPermission.denied) {
+      // Permissions are denied, next time you could try
+      // requesting permissions again (this is also where
+      // Android's shouldShowRequestPermissionRationale
+      // returned true. According to Android guidelines
+      // your App should show an explanatory UI now.
+      return Future.error('Location permissions are denied');
+    }
+  }
+
+  if (permission == geo.LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately.
+    return Future.error(
+      'Location permissions are permanently denied, we cannot request permissions.',
+    );
+  }
+
+  // When we reach here, permissions are granted and we can
+  // continue accessing the position of the device.
+  return await geo.Geolocator.getCurrentPosition();
 }
 
 class MyApp extends StatelessWidget {
@@ -65,8 +108,20 @@ class _MyHomePageState extends State<MyHomePage> {
     final state = context.watch<DarkModeCubit>().state;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          mapController.location;
+        onPressed: () async {
+          final position = await _determinePosition();
+          mapController.location.updateSettings(
+            LocationComponentSettings(enabled: true),
+          );
+          mapController.flyTo(
+            CameraOptions(
+              center: Point(
+                coordinates: Position(position.longitude, position.latitude),
+              ),
+              zoom: 15,
+            ),
+            MapAnimationOptions(duration: 1500),
+          );
         },
       ),
       appBar: AppBar(
