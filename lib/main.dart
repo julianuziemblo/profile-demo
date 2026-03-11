@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:profile/cubit/dark_mode_cubit.dart';
 import 'package:profile/post.dart';
 import 'package:profile/settings_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+const _token = '';
+void main() async {
+  await Permission.locationWhenInUse.request();
+  WidgetsFlutterBinding.ensureInitialized();
+  MapboxOptions.setAccessToken(_token);
   runApp(const MyApp());
 }
 
@@ -53,10 +59,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  late final MapboxMap mapController;
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DarkModeCubit>().state;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          mapController.location;
+        },
+      ),
       appBar: AppBar(
         actions: [
           IconButton(
@@ -70,50 +82,55 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Container(
-        color: state is DarkModeOn ? Colors.black : Colors.white,
-        child: ListView(
-          children: [
-            Container(
-              height: 125,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/rl9-tlo.jpg'),
-                  fit: BoxFit.fitWidth,
-                  alignment: FractionalOffset.center,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                spacing: 10,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage('assets/profilowe.jpg'),
-                        radius: 40,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            clicked = !clicked;
-                          });
-                        },
-                        child: FollowButton(clicked: clicked),
-                      ),
-                    ],
-                  ),
-                  TwitterBio(profileName: _profileName, tag: _tag),
-                  ...getPosts(10),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: MapWidget(
+        onMapCreated: (controller) {
+          mapController = controller;
+        },
       ),
+      //  Container(
+      //   color: state is DarkModeOn ? Colors.black : Colors.white,
+      //   child: ListView(
+      //     children: [
+      //       Container(
+      //         height: 125,
+      //         decoration: BoxDecoration(
+      //           image: DecorationImage(
+      //             image: AssetImage('assets/rl9-tlo.jpg'),
+      //             fit: BoxFit.fitWidth,
+      //             alignment: FractionalOffset.center,
+      //           ),
+      //         ),
+      //       ),
+      //       Padding(
+      //         padding: const EdgeInsets.all(15),
+      //         child: Column(
+      //           spacing: 10,
+      //           children: [
+      //             Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               children: [
+      //                 CircleAvatar(
+      //                   backgroundImage: AssetImage('assets/profilowe.jpg'),
+      //                   radius: 40,
+      //                 ),
+      //                 GestureDetector(
+      //                   onTap: () {
+      //                     setState(() {
+      //                       clicked = !clicked;
+      //                     });
+      //                   },
+      //                   child: FollowButton(clicked: clicked),
+      //                 ),
+      //               ],
+      //             ),
+      //             TwitterBio(profileName: _profileName, tag: _tag),
+      //             ...getPosts(10),
+      //           ],
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
