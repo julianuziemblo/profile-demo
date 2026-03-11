@@ -110,9 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final position = await _determinePosition();
-          mapController.location.updateSettings(
-            LocationComponentSettings(enabled: true),
-          );
           mapController.flyTo(
             CameraOptions(
               center: Point(
